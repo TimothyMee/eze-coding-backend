@@ -7,10 +7,7 @@ let multer = require('multer');
 var upload = multer({ dest: 'temp/' })
 const fs = require('fs');
 const excelToJson = require('convert-excel-to-json');
-
-
-
-// const api = require('./api');
+const api = require('./api');
 
 
 //establish db connection 
@@ -174,8 +171,7 @@ app.post('/upload', [upload.single('products')], (req, res) => {
 });
 
 
-// app.use('/api', api);
-
+app.use('/api', api);
 app.listen(port, () => {
     console.log(`listening at port ${port}`);
 })
