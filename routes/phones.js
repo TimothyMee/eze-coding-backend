@@ -1,8 +1,8 @@
-const PhoneController = require('../controllers/PhoneController');
+const PhoneController = require('../controllers/PhoneController')
 module.exports.setup = (app) => {
-    app.post(
-        '/upload',
-        [],
-        PhoneController.upload
-    );
+	app.post(
+		'/upload',
+		[],
+		PhoneController.upload
+	)
 }

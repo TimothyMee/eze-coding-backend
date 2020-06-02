@@ -1,11 +1,11 @@
 const upload = (req, res) => {
-    try {
+	try {
         
-    } catch (error) {
+	} catch (error) {
         
-    }
+	}
 }
 
 module.exports = {
-    upload
+	upload
 }
