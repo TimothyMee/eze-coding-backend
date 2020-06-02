@@ -1,7 +1,11 @@
 const fs = require('fs')
 const excelToJson = require('convert-excel-to-json')
+const sellRequestModel = require('../models/SellRequest')
+const buyRequestModel = require('../models/BuyRequest')
+const mongoose = require('mongoose')
 
-const upload = (req, res) => {
+
+const upload = async (req, res) => {
 	try {
 		//parsing data
 		const path = fs.createReadStream(req.file.path).path
@@ -37,10 +41,12 @@ const upload = (req, res) => {
 		const sell = processDocument(path, sheet, sellRange, sellColumnKeyMapping, sellNameColumnKeyMapping)
 
 		fs.unlinkSync(req.file.path) // Empty temp folder
-		return res.status(200).send({ message: 'product uploaded successfully', data: {
-			buy,
-			sell
-		} })
+        
+		await mongoose.connection.db.dropDatabase()
+		buyRequestModel.insertMany(buy)
+		sellRequestModel.insertMany(sell)
+        
+		return res.status(200).send({ message: 'product uploaded successfully' })
 
 	} catch (error) {
 		return res.status(500).send({ message: 'Internal Server Error', data: error.message })
@@ -81,7 +87,7 @@ const processDocument = (path, sheet ,range, columnKeyMapping, nameColumnKeyMapp
 			for(let grade of grades)
 			{
 				finalJSON.push({
-					phone: phoneNames[i].name,
+					name: phoneNames[i].name,
 					storage: storage_size,
 					grade: grade,
 					price: storage[grade]

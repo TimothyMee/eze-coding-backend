@@ -7,7 +7,7 @@ const api = require('./api')
 
 
 //establish db connection 
-// require('./lib/db');
+require('./lib/db')
 
 const app = express()
 
