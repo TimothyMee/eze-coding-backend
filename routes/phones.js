@@ -9,5 +9,6 @@ module.exports.setup = (app) => {
 		PhoneController.upload
 	)
 	app.get('/search', PhoneController.search)
-	app.get('/phones', PhoneController.getPhones)
+	app.get('/phones/buy', PhoneController.getBuyRequest)
+	app.get('/phones/sell', PhoneController.getSellRequest)
 }

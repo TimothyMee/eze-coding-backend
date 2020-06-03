@@ -137,22 +137,55 @@ const search = async (req, res) => {
 	}
 }
 
-const getPhones = async (req, res) => {
+const getBuyRequest = async (req, res) => {
 	try {
 		//fetch
 		const buyRequest = await buyRequestModel.find({})
-		const sellRequest = await sellRequestModel.find({})
 
-		res.status(200).send({ message: 'product uploaded successfully', data: {
-			buyRequest,
-			sellRequest
+		//pagination
+		const pageCount = Math.ceil(buyRequest.length / 10)
+		let page = parseInt(req.query.p)
+		if (!page) { page = 1 }
+		if (page > pageCount) {
+			page = pageCount
+		}
+
+		res.status(200).send({ message: 'buy product request fetched successfully', data: {
+			page,
+			pageCount,
+			buyRequest: buyRequest.slice(page * 10 - 10, page * 10)
 		} })
 	} catch (error) {
 		return res.status(500).send({ message: 'Internal Server Error', data: error.message })
 	}
 }
+
+const getSellRequest = async (req, res) => {
+	try {
+		//fetch
+		const sellRequest = await sellRequestModel.find({})
+
+		//pagination
+		const pageCount = Math.ceil(sellRequest.length / 10)
+		let page = parseInt(req.query.p)
+		if (!page) { page = 1 }
+		if (page > pageCount) {
+			page = pageCount
+		}
+
+		res.status(200).send({ message: 'sell product request fetched successfully', data: {
+			page,
+			pageCount,
+			sellRequest: sellRequest.slice(page * 10 - 10, page * 10)
+		} })
+	} catch (error) {
+		return res.status(500).send({ message: 'Internal Server Error', data: error.message })
+	}
+}
+
 module.exports = {
 	upload,
 	search,
-	getPhones
+	getBuyRequest,
+	getSellRequest
 }
