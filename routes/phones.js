@@ -8,4 +8,5 @@ module.exports.setup = (app) => {
 		[upload.single('products')],
 		PhoneController.upload
 	)
+	app.get('/search', PhoneController.search)
 }
