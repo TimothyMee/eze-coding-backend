@@ -136,7 +136,23 @@ const search = async (req, res) => {
 		return res.status(500).send({ message: 'Internal Server Error', data: error.message })
 	}
 }
+
+const getPhones = async (req, res) => {
+	try {
+		//fetch
+		const buyRequest = await buyRequestModel.find({})
+		const sellRequest = await sellRequestModel.find({})
+
+		res.status(200).send({ message: 'product uploaded successfully', data: {
+			buyRequest,
+			sellRequest
+		} })
+	} catch (error) {
+		return res.status(500).send({ message: 'Internal Server Error', data: error.message })
+	}
+}
 module.exports = {
 	upload,
-	search
+	search,
+	getPhones
 }

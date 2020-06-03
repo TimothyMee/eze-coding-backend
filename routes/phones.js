@@ -9,4 +9,5 @@ module.exports.setup = (app) => {
 		PhoneController.upload
 	)
 	app.get('/search', PhoneController.search)
+	app.get('/phones', PhoneController.getPhones)
 }
