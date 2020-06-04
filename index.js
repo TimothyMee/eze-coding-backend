@@ -1,5 +1,6 @@
 const express = require('express')
 const bodyParser = require('body-parser')
+const cors = require('cors')
 require('dotenv').config()
 const config = require('./config')
 
@@ -15,6 +16,7 @@ const app = express()
 const { port } = config
 
 // Parse incoming requests data
+app.use(cors())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 
