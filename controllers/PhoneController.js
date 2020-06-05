@@ -100,7 +100,7 @@ const processDocument = (path, sheet ,range, columnKeyMapping, nameColumnKeyMapp
 	return finalJSON
 }
 
-const search = async (req, res) => {
+const searchBuy = async (req, res) => {
 	try {
 		//get and parse the data
 		const data = req.query.for
@@ -126,10 +126,43 @@ const search = async (req, res) => {
         
 		//fetch
 		const buyRequest = await buyRequestModel.find(query)
-		const sellRequest = await sellRequestModel.find(query)
 
 		res.status(200).send({ message: 'product uploaded successfully', data: {
 			buyRequest,
+		} })
+	} catch (error) {
+		return res.status(500).send({ message: 'Internal Server Error', data: error.message })
+	}
+}
+
+const searchSell = async (req, res) => {
+	try {
+		//get and parse the data
+		const data = req.query.for
+		if(!data) {
+			res.status(400).send({message: 'enter a value to search'})
+		}
+		const parsedData = data.split(',')
+		let query = {}
+
+		if(parsedData.length > 3) res.status(400).send({message: 'couldn\'t understand what you searched for'})
+		if(parsedData.length === 3) {
+			query.name = new RegExp('^' + parsedData[0].trim(), 'i')
+			query.grade = new RegExp('^' + parsedData[1].trim(), 'i')
+			query.storage = new RegExp('^' + parsedData[2].trim(), 'i')
+		} 
+		else if(parsedData.length === 2) {
+			query.name = new RegExp('^' + parsedData[0].trim(), 'i')
+			query.grade = new RegExp('^' + parsedData[1].trim(), 'i')
+		}
+		else {
+			query.grade = new RegExp('^' + parsedData[0].trim(), 'i')
+		}
+        
+		//fetch
+		const sellRequest = await sellRequestModel.find(query)
+
+		res.status(200).send({ message: 'product uploaded successfully', data: {
 			sellRequest
 		} })
 	} catch (error) {
@@ -185,7 +218,8 @@ const getSellRequest = async (req, res) => {
 
 module.exports = {
 	upload,
-	search,
+	searchBuy,
+	searchSell,
 	getBuyRequest,
 	getSellRequest
 }

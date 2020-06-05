@@ -8,7 +8,8 @@ module.exports.setup = (app) => {
 		[upload.single('products')],
 		PhoneController.upload
 	)
-	app.get('/search', PhoneController.search)
+	app.get('/buy/search', PhoneController.searchBuy)
+	app.get('/sell/search', PhoneController.searchSell)
 	app.get('/phones/buy', PhoneController.getBuyRequest)
 	app.get('/phones/sell', PhoneController.getSellRequest)
 }
