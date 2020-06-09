@@ -7,6 +7,11 @@ const mongoose = require('mongoose')
 
 const upload = async (req, res) => {
 	try {
+
+		if(req.fileValidationError) {
+			return res.status(400).send({ message: 'Error occured while uploading file. Please upload only excel (.xlsx, xls) files' })
+		}
+
 		//parsing data
 		const path = fs.createReadStream(req.file.path).path
 		const sheet = 'IPHONES'
@@ -54,50 +59,54 @@ const upload = async (req, res) => {
 }
 
 const processDocument = (path, sheet ,range, columnKeyMapping, nameColumnKeyMapping) => {
-	const initialExcelConversion = excelToJson({
-		sourceFile: path,
-		sheets: [sheet],
-		range,
-		columnToKey: columnKeyMapping
-	})
-	let phoneNames = excelToJson({
-		sourceFile: path,
-		sheets: [sheet],
-		range,
-		columnToKey: nameColumnKeyMapping
-	})
-	phoneNames = phoneNames['IPHONES'].filter((item) => (item.name !== 'Unlocked'))
-	const groupedConversion = initialExcelConversion[sheet].reduce((arr, el) => {
-		if(el['Storage Size'] === 'Storage Size'){
-			arr.push([])
-		}
-		else {
-			arr[arr.length - 1].push({...el})
-		}
-		return arr
-	}, [])
-
-	let finalJSON = []
-	for(let i=0; i<groupedConversion.length; i++){
-		const phones = groupedConversion[i]
-		for(let storage of phones ){
-			let grades = Object.keys(storage)
-			const storage_size = storage['Storage Size']
-			grades = grades.filter((item) => (item !== 'Storage Size'))
-			for(let grade of grades)
-			{
-				finalJSON.push({
-					name: phoneNames[i].name,
-					storage: storage_size,
-					grade: grade,
-					price: storage[grade]
-
-				})
+	try {
+		const initialExcelConversion = excelToJson({
+			sourceFile: path,
+			sheets: [sheet],
+			range,
+			columnToKey: columnKeyMapping
+		})
+		let phoneNames = excelToJson({
+			sourceFile: path,
+			sheets: [sheet],
+			range,
+			columnToKey: nameColumnKeyMapping
+		})
+		phoneNames = phoneNames['IPHONES'].filter((item) => (item.name !== 'Unlocked'))
+		const groupedConversion = initialExcelConversion[sheet].reduce((arr, el) => {
+			if(el['Storage Size'] === 'Storage Size'){
+				arr.push([])
+			}
+			else {
+				arr[arr.length - 1].push({...el})
+			}
+			return arr
+		}, [])
+	
+		let finalJSON = []
+		for(let i=0; i<groupedConversion.length; i++){
+			const phones = groupedConversion[i]
+			for(let storage of phones ){
+				let grades = Object.keys(storage)
+				const storage_size = storage['Storage Size']
+				grades = grades.filter((item) => (item !== 'Storage Size'))
+				for(let grade of grades)
+				{
+					finalJSON.push({
+						name: phoneNames[i].name,
+						storage: storage_size,
+						grade: grade,
+						price: storage[grade]
+	
+					})
+				}
 			}
 		}
+		
+		return finalJSON
+	} catch (error) {
+		throw (error)
 	}
-    
-	return finalJSON
 }
 
 const searchBuy = async (req, res) => {
